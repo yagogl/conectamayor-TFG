@@ -76,6 +76,40 @@ python manage.py runserver
 http://127.0.0.1:8000
 ```
 
+## Datos de demostración
+
+El proyecto incluye un script que carga un escenario de demostración
+completo (la familia González-Pérez) con usuarios, recordatorios,
+contactos y mensajes de ejemplo. Esto permite explorar la aplicación
+sin tener que crear los datos manualmente.
+
+Para cargarlo, una vez aplicadas las migraciones:
+
+```bash
+python manage.py shell < seed_demo.py
+```
+
+> **Nota:** las fotografías de la galería deben subirse manualmente desde la
+> propia aplicación, ya que requieren archivos de imagen reales.
+
+### Cuentas de acceso de la demostración
+
+Tras cargar la demo, se pueden usar las siguientes cuentas:
+
+| Usuario | Contraseña   | Rol                      |
+|---------|-------------|--------------------------|
+| carmen  | Carmen2026  | Persona mayor            |
+| antonio | Antonio2026 | Persona mayor            |
+| laura   | Laura2026   | Familiar editor          |
+| miguel  | Miguel2026  | Familiar (solo lectura)  |
+
+El grupo familiar de la demostración tiene el código **FAM-A3K9**.
+
+Las cuentas `carmen` y `antonio` corresponden al rol de persona mayor,
+con la interfaz simplificada. La cuenta `laura` permite gestionar la
+agenda y los contactos de ambos, y `miguel` muestra el rol de solo
+lectura.
+
 ## Estructura del proyecto
 
 El proyecto se organiza en aplicaciones Django independientes:
