@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block titulo %}Crear cuenta — ConectaMayor{% endblock %}
+
+{% block contenido %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body p-4">
+                    <h2 class="mb-4" style="color: var(--color-principal);">Crear cuenta</h2>
+                    <form method="post">
+                        {% csrf_token %}
+                        {% for field in form %}
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.help_text %}
+                            <small class="text-muted">{{ field.help_text }}</small>
+                            {% endif %}
+                            {% for error in field.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        {% endfor %}
+                        <button type="submit" class="btn btn-lg w-100 text-white mt-2"
+                            style="background-color: var(--color-principal);">
+                            Crear cuenta
+                        </button>
+                    </form>
+                    <p class="text-center mt-3 mb-0">
+                        ¿Ya tienes cuenta? <a href="{% url 'login' %}">Inicia sesión</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

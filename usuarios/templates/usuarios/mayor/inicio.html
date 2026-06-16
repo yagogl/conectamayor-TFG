@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% block titulo %}Inicio — ConectaMayor{% endblock %}
+
+{% block estilos_extra %}
+<style>
+    .icono-mayor {
+        font-size: 3rem;
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+    .btn-mayor {
+        font-size: 1.4rem;
+        padding: 1.5rem;
+        border-radius: 16px;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}
+
+{% block contenido %}
+<div class="container mt-4">
+    <div class="p-4 rounded mb-4 text-white" style="background-color: var(--color-principal);">
+        <h1 class="mb-0">¡Hola, {{ user.first_name|default:user.username }}! 👋</h1>
+    </div>
+
+    {% if not user.grupo_familiar %}
+    <div class="alert alert-warning">
+        <strong>Aún no perteneces a ningún grupo.</strong>
+        <a href="{% url 'unirse_grupo' %}" class="btn btn-warning ms-2">Unirme con código</a>
+    </div>
+    {% endif %}
+
+    {% if recordatorios_hoy_lista %}
+    <div class="mb-4">
+        <h4 style="color: var(--color-acento);">
+            📌 Hoy tienes {{ recordatorios_hoy_lista|length }}
+            recordatorio{{ recordatorios_hoy_lista|length|pluralize }} pendiente{{ recordatorios_hoy_lista|length|pluralize }}:
+        </h4>
+        {% for rec in recordatorios_hoy_lista %}
+        <div class="d-flex align-items-center justify-content-between p-3 mb-2 rounded"
+            style="background-color: #f8d7da; border-left: 5px solid #dc3545;">
+            <div>
+                <span class="me-2">
+                    {% if rec.tipo == 'pastilla' %}💊
+                    {% elif rec.tipo == 'medico' %}🏥
+                    {% elif rec.tipo == 'llamada' %}📞
+                    {% elif rec.tipo == 'cumple' %}🎂
+                    {% else %}📌{% endif %}
+                </span>
+                <strong>{{ rec.titulo }}</strong>
+                {% if rec.hora %}
+                <span class="text-muted ms-2">a las {{ rec.hora|time:"H:i" }}</span>
+                {% endif %}
+            </div>
+            <a href="{% url 'agenda:hecho' rec.pk %}"
+                class="btn btn-sm btn-success"
+                style="background-color: #198754; color: white;">
+                ✓ Hecho
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-success mb-4">
+        ✅ No tienes recordatorios pendientes para hoy. ¡Buen día!
+    </div>
+    {% endif %}
+
+    <div class="row g-3 mt-1">
+        <div class="col-6">
+            <a href="{% url 'agenda:lista' %}"
+                class="btn btn-light border btn-mayor w-100 text-center position-relative">
+                <span class="icono-mayor">📅</span>
+                Agenda
+                {% if recordatorios_hoy %}
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                    style="font-size: 0.9rem;">
+                    {{ recordatorios_hoy }}
+                </span>
+                {% endif %}
+            </a>
+        </div>
+        <div class="col-6">
+            <a href="{% url 'mensajes:lista' %}"
+                class="btn btn-light border btn-mayor w-100 text-center position-relative">
+                <span class="icono-mayor">💬</span>
+                Mensajes
+                {% if mensajes_nuevos %}
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                    style="font-size: 0.9rem;">
+                    {{ mensajes_nuevos }}
+                </span>
+                {% endif %}
+            </a>
+        </div>
+        <div class="col-6">
+            <a href="{% url 'galeria:lista' %}"
+                class="btn btn-light border btn-mayor w-100 text-center position-relative">
+                <span class="icono-mayor">🖼️</span>
+                Fotos
+                {% if fotos_nuevas %}
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                    style="font-size: 0.9rem;">
+                    {{ fotos_nuevas }}
+                </span>
+                {% endif %}
+            </a>
+        </div>
+        <div class="col-6">
+            <a href="{% url 'contactos:lista' %}"
+                class="btn btn-light border btn-mayor w-100 text-center">
+                <span class="icono-mayor">📞</span>
+                Contactos
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block titulo %}Mi perfil — ConectaMayor{% endblock %}
+
+{% block estilos_extra %}
+<style>
+    .foto-perfil {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 4px solid var(--color-principal);
+    }
+    .foto-perfil-placeholder {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        border: 4px solid var(--color-principal);
+        background-color: #e9ecef;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+    }
+    {% if user.es_mayor %}
+    .form-control, .form-label { font-size: 1.2rem; }
+    .btn-guardar { font-size: 1.2rem; padding: 0.75rem 2rem; }
+    {% endif %}
+</style>
+{% endblock %}
+
+{% block contenido %}
+<div class="container mt-4" style="max-width: 540px;">
+    <h2 style="color: var(--color-principal);">👤 Mi perfil</h2>
+
+    <div class="text-center mb-4">
+        {% if user.foto_perfil %}
+        <img src="{{ user.foto_perfil.url }}" alt="Foto de perfil" class="foto-perfil">
+        {% else %}
+        <div class="foto-perfil-placeholder mx-auto">👤</div>
+        {% endif %}
+        <p class="mt-2 text-muted">{{ user.username }}</p>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+
+        {% for field in form %}
+        <div class="mb-3">
+            <label for="{{ field.id_for_label }}" class="form-label fw-bold">
+                {{ field.label }}
+            </label>
+            {% if field.name == 'foto_perfil' %}
+            <div>
+                <label class="btn btn-outline-secondary w-100" style="min-height:44px;"
+                    for="{{ field.id_for_label }}">
+                    📷 Elegir foto
+                    {{ field }}
+                </label>
+            </div>
+            {% else %}
+            {{ field }}
+            {% endif %}
+            {% if field.help_text %}
+            <div class="form-text">{{ field.help_text }}</div>
+            {% endif %}
+            {% for error in field.errors %}
+            <div class="text-danger small">{{ error }}</div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+
+        <div class="d-grid mt-4">
+            <button type="submit" class="btn btn-guardar text-white"
+                style="background-color: var(--color-principal); min-height: 44px;">
+                💾 Guardar cambios
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

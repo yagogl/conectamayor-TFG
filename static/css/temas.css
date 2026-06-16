@@ -1,0 +1,77 @@
+/* ===== VARIABLES BASE ===== */
+:root {
+    --color-principal: #1a6e8e;
+    --color-acento: #d4940a;
+    --color-fondo: #ffffff;
+    --color-texto: #212529;
+    --color-texto-secundario: #555555;
+    --color-borde: #dee2e6;
+    --fuente-base: 18px;
+    --radio-boton: 10px;
+}
+
+/* ===== TEMA OSCURO ===== */
+[data-tema="oscuro"] {
+    --color-principal: #4fb3d4;
+    --color-acento: #f6c94e;
+    --color-fondo: #1a1a2e;
+    --color-texto: #e8e8e8;
+    --color-texto-secundario: #aaaaaa;
+    --color-borde: #444444;
+}
+
+/* ===== TEMA ALTO CONTRASTE ===== */
+[data-tema="contraste"] {
+    --color-principal: #0000ff;
+    --color-acento: #ffff00;
+    --color-fondo: #000000;
+    --color-texto: #ffffff;
+    --color-texto-secundario: #ffff00;
+    --color-borde: #ffffff;
+}
+
+/* ===== ESTILOS GLOBALES ===== */
+body {
+    font-size: var(--fuente-base);
+    background-color: var(--color-fondo);
+    color: var(--color-texto);
+}
+
+/* Tamaño mínimo de fuente para la vista del mayor */
+.vista-mayor {
+    font-size: 20px;
+}
+
+/* Objetivos táctiles mínimo 44px — WCAG 2.1 */
+.btn {
+    min-height: 44px;
+    min-width: 44px;
+    border-radius: var(--radio-boton);
+}
+
+/* Foco visible — nunca eliminar outline */
+:focus {
+    outline: 3px solid var(--color-acento) !important;
+    outline-offset: 2px;
+}
+
+/* Contraste en enlaces */
+a {
+    color: var(--color-principal);
+}
+
+/* Botones grandes para el mayor */
+.btn-mayor {
+    font-size: 1.4rem;
+    padding: 1.2rem;
+    border-radius: 16px;
+    min-height: 80px;
+}
+
+/* ===== TAMAÑOS DE TEXTO ===== */
+[data-tamano="pequeno"] { font-size: 14px; }
+[data-tamano="normal"] { font-size: 18px; }
+[data-tamano="grande"] { font-size: 22px; }
+[data-tamano="grande"] .btn { font-size: 1.2rem; }
+[data-tamano="grande"] .form-control { font-size: 1.2rem; }
+[data-tamano="grande"] .burbuja { font-size: 1.2rem; }

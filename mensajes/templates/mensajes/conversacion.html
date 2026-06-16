@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% block titulo %}Chat con {{ otro.first_name|default:otro.username }}{% endblock %}
+
+{% block estilos_extra %}
+<style>
+    #caja-mensajes {
+        height: 60vh;
+        overflow-y: auto;
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 1rem;
+    }
+    .burbuja {
+        max-width: 75%;
+        padding: 0.6rem 1rem;
+        border-radius: 18px;
+        margin-bottom: 0.5rem;
+        word-break: break-word;
+    }
+    .burbuja-propio {
+        background-color: var(--color-principal);
+        color: white;
+        margin-left: auto;
+        border-bottom-right-radius: 4px;
+    }
+    .burbuja-otro {
+        background-color: white;
+        border: 1px solid #dee2e6;
+        border-bottom-left-radius: 4px;
+    }
+    .hora { font-size: 0.75rem; opacity: 0.7; }
+    {% if user.es_mayor %}
+    #campo-texto { font-size: 1.2rem; padding: 0.8rem; }
+    #btn-enviar { font-size: 1.2rem; }
+    {% endif %}
+</style>
+{% endblock %}
+
+{% block contenido %}
+<div class="container mt-3">
+    <h4 class="mb-3" style="color: var(--color-principal);">
+    {{ otro.first_name|default:otro.username }}
+</h4>
+
+    <div id="caja-mensajes">
+        {% for mensaje in mensajes %}
+        <div class="d-flex {% if mensaje.remitente == user %}justify-content-end{% endif %}"
+             data-id="{{ mensaje.pk }}">
+            <div class="burbuja {% if mensaje.remitente == user %}burbuja-propio{% else %}burbuja-otro{% endif %}">
+                {{ mensaje.texto }}
+                <div class="hora text-end">{{ mensaje.enviado_en|time:"H:i" }}</div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <form method="post" class="mt-3 d-flex gap-2" id="form-mensaje">
+        {% csrf_token %}
+        <input type="text" name="texto" id="campo-texto"
+            class="form-control" placeholder="Escribe un mensaje..." autocomplete="off" required>
+        <button type="submit" id="btn-enviar" class="btn text-white px-4"
+            style="background-color: var(--color-principal);">
+            Enviar
+        </button>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts_extra %}
+<script>
+    const cajaMensajes = document.getElementById('caja-mensajes');
+    const otroId = {{ otro.pk }};
+
+    // Scroll al final
+    function scrollAbajo() {
+        cajaMensajes.scrollTop = cajaMensajes.scrollHeight;
+    }
+    scrollAbajo();
+
+    // ID del último mensaje visible
+    function ultimoId() {
+        const burbujas = cajaMensajes.querySelectorAll('[data-id]');
+        if (burbujas.length === 0) return 0;
+        return parseInt(burbujas[burbujas.length - 1].dataset.id);
+    }
+
+    // Añadir burbuja al chat
+    function añadirMensaje(m) {
+        const div = document.createElement('div');
+        div.className = 'd-flex ' + (m.propio ? 'justify-content-end' : '');
+        div.dataset.id = m.id;
+        div.innerHTML = `
+            <div class="burbuja ${m.propio ? 'burbuja-propio' : 'burbuja-otro'}">
+                ${m.texto}
+                <div class="hora text-end">${m.hora}</div>
+            </div>`;
+        cajaMensajes.appendChild(div);
+        scrollAbajo();
+    }
+
+    // Polling cada 5 segundos
+    setInterval(() => {
+        fetch(`/mensajes/${otroId}/nuevos/?desde=${ultimoId()}`)
+            .then(r => r.json())
+            .then(data => {
+                data.mensajes.forEach(m => añadirMensaje(m));
+            });
+    }, 5000);
+</script>
+{% endblock %}

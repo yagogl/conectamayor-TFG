@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block titulo %}{{ modulo }} — Próximamente{% endblock %}
+
+{% block contenido %}
+<div class="container mt-5 text-center">
+    <h2>{{ modulo }}</h2>
+    <p class="text-muted">Esta sección se implementará en el próximo sprint.</p>
+    <a href="{% url 'inicio' %}" class="btn btn-primary">Volver al inicio</a>
+</div>
+{% endblock %}

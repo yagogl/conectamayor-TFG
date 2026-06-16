@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block titulo %}{% if editar %}Editar{% else %}Nuevo{% endif %} contacto{% endblock %}
+
+{% block estilos_extra %}
+<style>
+    .form-control, .form-select, .btn { font-size: 1.2rem; padding: 0.8rem; }
+</style>
+{% endblock %}
+
+{% block contenido %}
+<div class="container mt-4">
+    <h2 style="color: var(--color-principal);">
+        {% if editar %}Editar contacto{% else %}Nuevo contacto{% endif %}
+    </h2>
+    <form method="post" class="mt-3">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="mb-4">
+            <label class="form-label fw-bold fs-5">{{ field.label }}</label>
+            {{ field }}
+            {% for error in field.errors %}
+            <div class="alert alert-danger mt-2" style="font-size: 1.1rem;">
+                ⚠️ {{ error }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+        <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-lg text-white"
+                style="background-color: var(--color-principal); font-size: 1.4rem;">
+                💾 Guardar
+            </button>
+            <a href="{% url 'contactos:lista' %}" class="btn btn-lg btn-outline-secondary">
+                Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

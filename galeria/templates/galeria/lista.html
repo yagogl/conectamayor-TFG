@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block titulo %}Fotos — ConectaMayor{% endblock %}
+
+{% block estilos_extra %}
+<style>
+    .foto-card {
+        cursor: pointer;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: transform 0.2s;
+    }
+    .foto-card:hover { transform: scale(1.02); }
+    .foto-card img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+    {% if user.es_mayor %}
+    .btn { font-size: 1.1rem; padding: 0.6rem 1rem; }
+    {% endif %}
+</style>
+{% endblock %}
+
+{% block contenido %}
+<div class="container mt-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 style="color: var(--color-principal);">🖼️ Fotos</h2>
+        <a href="{% url 'galeria:subir' %}" class="btn text-white"
+            style="background-color: var(--color-principal);">
+            + Subir foto
+        </a>
+    </div>
+
+    {% if not user.grupo_familiar %}
+    <div class="alert alert-info">Únete a un grupo familiar para ver las fotos.</div>
+    {% elif not fotos %}
+    <div class="alert alert-info">Todavía no hay fotos. ¡Sube la primera!</div>
+    {% else %}
+    <div class="row g-3">
+        {% for foto in fotos %}
+        <div class="col-6 col-md-4">
+            <a href="{% url 'galeria:detalle' foto.pk %}" class="text-decoration-none">
+                <div class="card foto-card shadow-sm">
+                    <img src="{{ foto.imagen.url }}" alt="{{ foto.titulo|default:'Foto' }}">
+                    {% if foto.titulo %}
+                    <div class="card-body py-2 px-3">
+                        <p class="mb-0 text-dark">{{ foto.titulo }}</p>
+                        <small class="text-muted">{{ foto.subida_por.first_name|default:foto.subida_por.username }}</small>
+                    </div>
+                    {% endif %}
+                </div>
+            </a>
+            {% if user == foto.subida_por or user.es_editor %}
+            <a href="{% url 'galeria:borrar' foto.pk %}"
+                class="btn btn-sm btn-outline-danger mt-1"
+                onclick="return confirm('¿Eliminar esta foto?')">
+                🗑️
+            </a>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

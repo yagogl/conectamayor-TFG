@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% block titulo %}Contactos — ConectaMayor{% endblock %}
+
+{% block estilos_extra %}
+<style>
+    .icono-categoria { font-size: 1.4rem; }
+    {% if user.es_mayor %}
+    .btn { font-size: 1.1rem; padding: 0.6rem 1rem; }
+    .card-title { font-size: 1.3rem; }
+    {% endif %}
+</style>
+{% endblock %}
+
+{% block contenido %}
+<div class="container mt-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 style="color: var(--color-principal);">📞 Contactos</h2>
+        {% if mayores|length > 1 %}
+        <div class="mb-3">
+            <label class="form-label fw-bold">Viendo contactos de:</label>
+            <div class="d-flex gap-2 flex-wrap">
+                {% for m in mayores %}
+                <a href="?mayor={{ m.pk }}"
+                    class="btn {% if mayor.pk == m.pk %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                    {{ m.get_full_name|default:m.username }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% elif mayor and not user.es_mayor %}
+        <p class="text-muted">Viendo contactos de <strong>{{ mayor.get_full_name|default:mayor.username }}</strong></p>
+        {% endif %}
+        {% if user.es_mayor or user.es_editor %}
+        <a href="{% url 'contactos:nuevo' %}" class="btn text-white"
+            style="background-color: var(--color-principal);">
+            + Añadir contacto
+        </a>
+        {% endif %}
+    </div>
+
+    {% if not mayor %}
+    <div class="alert alert-info">No hay ninguna persona mayor en el grupo todavía.</div>
+    {% elif not categorias %}
+    <div class="alert alert-info">Todavía no hay contactos. ¡Añade el primero!</div>
+    {% else %}
+        {% if miembros %}
+        <h5 class="mt-4 mb-2 text-muted">👨‍👩‍👧 Familia y amigos (grupo familiar)</h5>
+        {% for miembro in miembros %}
+        <div class="card mb-2">
+            <div class="card-body py-2 px-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong class="card-title">{{ miembro.get_full_name|default:miembro.username }}</strong>
+                        <span class="badge bg-secondary ms-1">{{ miembro.get_rol_display }}</span>
+                        {% if miembro.telefono %}
+                        <span class="text-muted ms-2">{{ miembro.telefono }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="d-flex gap-2">
+                        {% if miembro.telefono %}
+                        <a href="tel:{{ miembro.telefono }}"
+                            class="btn btn-success btn-sm">
+                            📞 Llamar
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        {% for categoria, contactos in categorias.items %}
+        <h5 class="mt-4 mb-2 text-muted">{{ categoria }}</h5>
+        {% for contacto in contactos %}
+        <div class="card mb-2">
+            <div class="card-body py-2 px-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong class="card-title">{{ contacto.nombre }}</strong>
+                        {% if contacto.telefono %}
+                        <span class="text-muted ms-2">{{ contacto.telefono }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="d-flex gap-2 flex-wrap">
+                        {% if contacto.telefono %}
+                        <a href="tel:{{ contacto.telefono }}"
+                            class="btn btn-success btn-sm">
+                            📞 Llamar
+                        </a>
+                        {% endif %}
+                        {% if user.es_mayor or user.es_editor %}
+                        <a href="{% url 'contactos:editar' contacto.pk %}"
+                            class="btn btn-outline-primary btn-sm">
+                            ✏️ Editar
+                        </a>
+                        {% endif %}
+                        {% if user.es_editor %}
+                        <a href="{% url 'contactos:borrar' contacto.pk %}"
+                            class="btn btn-outline-danger btn-sm"
+                            onclick="return confirm('¿Eliminar este contacto?')">🗑️</a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% if contacto.notas %}
+                <small class="text-muted">{{ contacto.notas }}</small>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+        {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}
